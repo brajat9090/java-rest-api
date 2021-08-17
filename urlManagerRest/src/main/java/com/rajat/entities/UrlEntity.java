@@ -2,6 +2,8 @@ package com.rajat.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -14,6 +16,7 @@ import org.hibernate.annotations.ParamDef;
 @Table(name="url_data")
 public class UrlEntity {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
 	int id;
 	@Column(name="url",unique = true)
@@ -60,6 +63,4 @@ public class UrlEntity {
 	public void setUsageCount(int usageCount) {
 		this.usageCount = usageCount;
 	}
-	
-	
 }

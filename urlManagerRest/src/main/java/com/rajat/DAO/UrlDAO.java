@@ -1,6 +1,5 @@
 package com.rajat.DAO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -14,7 +13,7 @@ public class UrlDAO {
 			.addAnnotatedClass(UrlEntity.class)
 			.buildSessionFactory();
 	
-	public List getShortKey(String url) {
+	public List<String> getShortKey(String url) {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 		session.enableFilter("urlFilter").setParameter("url",url);
@@ -25,12 +24,13 @@ public class UrlDAO {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 		session.createNativeQuery("UPDATE url_data set usage_count = usage_count +1 where url=:url").setParameter("url", url).executeUpdate();
-		session.getTransaction().commit();		
+		session.getTransaction().commit();
 	}
 	public void addUrl(UrlEntity urlEntity) {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
-		session.save(urlEntity);
+		int generatedId = (int)session.save(urlEntity);
+		System.out.println(generatedId);
 		session.getTransaction().commit();
 	}
 	public List<Integer> getCount(String url) {
@@ -45,6 +45,25 @@ public class UrlDAO {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 		List<UrlEntity> list = session.createQuery("from UrlEntity").setFirstResult(page*size).setMaxResults(size).getResultList();
+		System.out.println(list);
+		return list;
+	}
+	public List<String> checkShortKey(String url, String shortKey) {
+		System.out.println(shortKey);
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+		session.enableFilter("urlFilter").setParameter("url",url);
+		List<String> list = session.createQuery("select shortKey from UrlEntity").getResultList();
+		session.getTransaction().commit();
+		System.out.println(list);
+		return list;
+	}
+	public List<String> checkUrl(String url) {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+		session.enableFilter("urlFilter").setParameter("url",url);
+		List<String> list = session.createQuery("select url from UrlEntity").getResultList();
+		session.getTransaction().commit();
 		System.out.println(list);
 		return list;
 	}

@@ -1,6 +1,5 @@
 package com.rajat.resources;
 
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Random;
 
@@ -8,12 +7,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
-import org.rajat.showroom.model.Product;
 
 import com.rajat.entities.UrlEntity;
 import com.rajat.service.UrlService;
@@ -22,22 +18,35 @@ import com.rajat.service.UrlService;
 public class Url {
 	
 	UrlService service = new UrlService();
-	
 	@POST
 	@Path("/storeurl")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void setUrl(@QueryParam("url") String url) {
+	@Produces(MediaType.TEXT_PLAIN)
+	public String setUrl(@QueryParam("url") String url) {
 		//save that into a table with a unique short key and a count(usage count) initialised to 0.
-		int lowerLimit = 97, upperLimit = 122;
-		Random random = new Random();
-		StringBuffer shortKey = new StringBuffer(5);
-		for (int i = 0; i < 5; i++) {
-            int nextRandomChar = lowerLimit + (int)(random.nextFloat() * (upperLimit - lowerLimit + 1));
-            shortKey.append((char)nextRandomChar);
-        }
-	    
-		UrlEntity urlEntity = new UrlEntity(url, shortKey.toString());
-		service.addUrl(urlEntity);
+		Boolean isUrlPresent = service.checkUrl(url);
+		if(!isUrlPresent) {
+			String shortKey = generateRandomString();
+			System.out.println("OUTSIDE LOOP BEFORE CALLING");
+			Boolean isPresent = service.checkShortKey(url, shortKey);
+			System.out.println("OUTSIDE LOOP AFTER CALLING");
+			int count = 0;
+			while(isPresent) {
+				System.out.println("INSIDE WHILE LOOP");
+				shortKey = generateRandomString();
+				isPresent = service.checkShortKey(url, shortKey);
+				count++;
+				if(count ==5) break;
+			}
+			if(!isPresent) {
+				System.out.println("INSIDE IF");
+				UrlEntity urlEntity = new UrlEntity(url, shortKey);
+				service.addUrl(urlEntity);
+			}
+			return "URL Inserted";
+		}else {
+			return "This URL is already found";
+		}
 	}
 	
 	@GET
@@ -59,16 +68,20 @@ public class Url {
 	@GET
 	@Path("/list")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<UrlEntity> getList(@QueryParam("page") int page, @QueryParam("size") int size) {
-		System.out.println(page+" "+size);
+	public List<UrlEntity> getList(@QueryParam("page") int page, @QueryParam("size") int size) {	
 		List<UrlEntity> urlEntities;
 		urlEntities = service.getList(page, size);
-		
-//		if(end > 0) {
-//			productList = productList.subList(start, end);
-//		}
-		
 		return urlEntities;
+	}
+	public String generateRandomString() {
+		int lowerLimit = 97, upperLimit = 122;
+		Random random = new Random();
+		StringBuffer shortKey = new StringBuffer(5);
+		for (int i = 0; i < 5; i++) {
+            int nextRandomChar = lowerLimit + (int)(random.nextFloat() * (upperLimit - lowerLimit + 1));
+            shortKey.append((char)nextRandomChar);
+        }
+		return shortKey.toString();
 	}
 	
 	

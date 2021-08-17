@@ -17,7 +17,6 @@ public class UrlService {
 	}
 
 	public void addUrl(UrlEntity urlEntity) {
-		// TODO Auto-generated method stub
 		dao.addUrl(urlEntity);
 	}
 
@@ -36,6 +35,24 @@ public class UrlService {
 
 	public List<UrlEntity> getList(int page, int size) {
 		return dao.getList(page,size);
+	}
+
+	public Boolean checkShortKey(String url, String shortKey) {
+		List<String> list = dao.checkShortKey(url, shortKey);
+		if(list.size() != 0 && list.get(0).equals(shortKey)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Boolean checkUrl(String url) {
+		List<String> list = dao.checkUrl(url);
+		if(list.size() == 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 }
