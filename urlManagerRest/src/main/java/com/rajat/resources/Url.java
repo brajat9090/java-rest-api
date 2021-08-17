@@ -26,20 +26,13 @@ public class Url {
 		//save that into a table with a unique short key and a count(usage count) initialised to 0.
 		Boolean isUrlPresent = service.checkUrl(url);
 		if(!isUrlPresent) {
-			String shortKey = generateRandomString();
-			System.out.println("OUTSIDE LOOP BEFORE CALLING");
+			String shortKey = generateRandomString();		
 			Boolean isPresent = service.checkShortKey(url, shortKey);
-			System.out.println("OUTSIDE LOOP AFTER CALLING");
-			int count = 0;
 			while(isPresent) {
-				System.out.println("INSIDE WHILE LOOP");
 				shortKey = generateRandomString();
 				isPresent = service.checkShortKey(url, shortKey);
-				count++;
-				if(count ==5) break;
 			}
 			if(!isPresent) {
-				System.out.println("INSIDE IF");
 				UrlEntity urlEntity = new UrlEntity(url, shortKey);
 				service.addUrl(urlEntity);
 			}

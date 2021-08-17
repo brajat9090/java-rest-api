@@ -29,8 +29,7 @@ public class UrlDAO {
 	public void addUrl(UrlEntity urlEntity) {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
-		int generatedId = (int)session.save(urlEntity);
-		System.out.println(generatedId);
+		session.save(urlEntity);
 		session.getTransaction().commit();
 	}
 	public List<Integer> getCount(String url) {
@@ -45,17 +44,14 @@ public class UrlDAO {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 		List<UrlEntity> list = session.createQuery("from UrlEntity").setFirstResult(page*size).setMaxResults(size).getResultList();
-		System.out.println(list);
 		return list;
 	}
 	public List<String> checkShortKey(String url, String shortKey) {
-		System.out.println(shortKey);
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 		session.enableFilter("urlFilter").setParameter("url",url);
 		List<String> list = session.createQuery("select shortKey from UrlEntity").getResultList();
 		session.getTransaction().commit();
-		System.out.println(list);
 		return list;
 	}
 	public List<String> checkUrl(String url) {
@@ -64,7 +60,6 @@ public class UrlDAO {
 		session.enableFilter("urlFilter").setParameter("url",url);
 		List<String> list = session.createQuery("select url from UrlEntity").getResultList();
 		session.getTransaction().commit();
-		System.out.println(list);
 		return list;
 	}
 
