@@ -1,6 +1,7 @@
 package com.rajat.resources;
 
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Random;
 
 import javax.ws.rs.Consumes;
@@ -17,17 +18,23 @@ import com.rajat.service.UrlService;
 @Path("/")
 public class Url {
 	
+	UrlService service = new UrlService();
+	
 	@POST
 	@Path("/storeurl")
-	@Consumes(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
 	public void setUrl(@QueryParam("url") String url) {
 		//save that into a table with a unique short key and a count(usage count) initialised to 0.
-		byte[] array = new byte[7];
-		new Random().nextBytes(array);
-	    String shortKey = new String(array, Charset.forName("UTF-8"));
+		int lowerLimit = 97, upperLimit = 122;
+		Random random = new Random();
+		StringBuffer shortKey = new StringBuffer(5);
+		for (int i = 0; i < 5; i++) {
+            int nextRandomChar = lowerLimit + (int)(random.nextFloat() * (upperLimit - lowerLimit + 1));
+            shortKey.append((char)nextRandomChar);
+        }
 	    
-		UrlEntity urlEntity = new UrlEntity(url, shortKey);
-		new UrlService().addUrl(urlEntity);
+		UrlEntity urlEntity = new UrlEntity(url, shortKey.toString());
+		service.addUrl(urlEntity);
 	}
 	
 	@GET
@@ -35,19 +42,20 @@ public class Url {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getShortKey(@QueryParam("url") String url) {
 		// return the unique short key after incrementing the usage count.
-		return new UrlService().getShortKey(url);
+		service.increaseUsageCount(url);
+		return service.getShortKey(url);
 	}
 	@GET
 	@Path("/count")
 	@Produces(MediaType.TEXT_PLAIN)
-	public int getCount(@QueryParam("url") String url) {
+	public String getCount(@QueryParam("url") String url) {
 		// return the latest usage count
-		return new UrlService().getCount(url);
+		return service.getCount(url);
 	}
 	
 	@GET
 	@Path("/list")
-	@Produces(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
 	public String getList(@QueryParam("page") int page, @QueryParam("size") int size) {
 		return page+" - "+size;
 	}

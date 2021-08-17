@@ -1,10 +1,28 @@
 package com.rajat.entities;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+@Entity
+@FilterDef(name = "urlFilter", parameters = @ParamDef(name = "url", type = "string"))
+@Filter(name = "urlFilter", condition = "url = :url")
+@Table(name="url_data")
 public class UrlEntity {
+	@Id
+	@Column(name="id")
 	int id;
+	@Column(name="url",unique = true)
 	String url;
+	@Column(name="short_key")
 	String shortKey;
+	@Column(name="usage_count")
 	int usageCount;
+	
 	public UrlEntity() {
 		
 	}
