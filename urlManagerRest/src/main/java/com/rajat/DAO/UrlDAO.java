@@ -33,13 +33,19 @@ public class UrlDAO {
 		session.save(urlEntity);
 		session.getTransaction().commit();
 	}
-
 	public List<Integer> getCount(String url) {
 		Session session = factory.getCurrentSession();
 		session.beginTransaction();
 		session.enableFilter("urlFilter").setParameter("url",url);
-		
 		List<Integer> list = session.createQuery("select usageCount from UrlEntity").getResultList();
+		return list;
+	}
+	
+	public List<UrlEntity> getList(int page, int size) {
+		Session session = factory.getCurrentSession();
+		session.beginTransaction();
+		List<UrlEntity> list = session.createQuery("from UrlEntity").setFirstResult(page*size).setMaxResults(size).getResultList();
+		System.out.println(list);
 		return list;
 	}
 

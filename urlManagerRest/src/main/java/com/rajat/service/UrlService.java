@@ -34,4 +34,8 @@ public class UrlService {
 		dao.increaseUsageCount(url);
 	}
 
+	public List<UrlEntity> getList(int page, int size) {
+		return dao.getList(page,size);
+	}
+
 }

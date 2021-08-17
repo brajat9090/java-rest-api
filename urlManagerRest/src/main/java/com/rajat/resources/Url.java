@@ -8,9 +8,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import org.rajat.showroom.model.Product;
 
 import com.rajat.entities.UrlEntity;
 import com.rajat.service.UrlService;
@@ -56,8 +59,16 @@ public class Url {
 	@GET
 	@Path("/list")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getList(@QueryParam("page") int page, @QueryParam("size") int size) {
-		return page+" - "+size;
+	public List<UrlEntity> getList(@QueryParam("page") int page, @QueryParam("size") int size) {
+		System.out.println(page+" "+size);
+		List<UrlEntity> urlEntities;
+		urlEntities = service.getList(page, size);
+		
+//		if(end > 0) {
+//			productList = productList.subList(start, end);
+//		}
+		
+		return urlEntities;
 	}
 	
 	
